@@ -30,12 +30,14 @@ export class OtpApiService {
         this.httpService.post(
           `${this.otpServerUrl}/send`,
           {
-            phone,
-            purpose,
-            code,
-          },
+              phone,
+              purpose,
+              code
+            },
         ),
       );
+
+      this.logger.log("response", response)
 
       if (!response.data?.success) {
         throw new ServiceUnavailableException(

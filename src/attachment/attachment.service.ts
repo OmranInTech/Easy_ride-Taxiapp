@@ -1,14 +1,7 @@
-import {
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
-import {
-  EntityManager,
-  EntityRepository,
-} from '@mikro-orm/postgresql';
+import { Injectable,NotFoundException,} from '@nestjs/common';
+import {  EntityManager, EntityRepository,}from '@mikro-orm/postgresql';
 import { InjectRepository } from '@mikro-orm/nestjs';
 import { randomUUID } from 'crypto';
-
 import { Attachment } from '../database/entities/attachment.entity';
 import { ObjectStorage } from '../shared/object-storage';
 
@@ -52,47 +45,11 @@ export class AttachmentService {
       try {
         await this.objectStorage.delete(objectKey);
       } catch {
-        // Ignore cleanup error.
+       
       }
 
       throw error;
     }
   }
 
-  async getByUid(uid: string): Promise<Attachment> {
-    const attachment =
-      await this.attachmentRepository.findOne({ uid });
-
-    if (!attachment) {
-      throw new NotFoundException(
-        'Attachment not found',
-      );
-    }
-
-    return attachment;
-  }
-
-  async delete(uid: string): Promise<void> {
-    const attachment = await this.getByUid(uid);
-
-    await this.objectStorage.delete(
-      attachment.objectKey,
-    );
-
-    this.em.remove(attachment);
-    await this.em.flush();
-  }
-
-  async getFile(uid: string) {
-    const attachment = await this.getByUid(uid);
-
-    const object = await this.objectStorage.get(
-      attachment.objectKey,
-    );
-
-    return {
-      attachment,
-      object,
-    };
-  }
 }

@@ -25,42 +25,49 @@ export class OtpService {
 
   constructor(
     private readonly otpApiService: OtpApiService,
-  ) {}
+  ) {
+    this.logger.warn('OtpService INSTANCE CREATED');
+  }
 
   async sendOtp(
-    phone: string,
-    purpose: OtpPurpose,
-  ): Promise<void> {
-    const code = this.generateOtp();
+  phone: string,
+  purpose: OtpPurpose,
+): Promise<void> {
+  const code = this.generateOtp();
 
-    const expiresAt = new Date(
-      Date.now() + 5 * 60 * 1000,
-    );
+  const expiresAt = new Date(
+    Date.now() + 5 * 60 * 1000,
+  );
 
-    this.otps.unshift({
-      phone,
-      purpose,
-      code,
-      expiresAt,
-      verified: false,
-    });
+  this.otps.unshift({
+    phone,
+    purpose,
+    code,
+    expiresAt,
+    verified: false,
+  });
 
-    await this.otpApiService.sendOtp(
-      phone,
-      purpose,
-      code,
-    );
+  this.logger.debug({
+    action: 'OTP_STORED',
+    phone,
+    purpose,
+    code,
+    storedOtps: this.otps,
+  });
 
-    this.logger.log(
-      `OTP request completed for ${purpose}`,
-    );
-  }
+  await this.otpApiService.sendOtp(
+    phone,
+    purpose,
+    code,
+  );
+}
 
   async verifyOtp(
     phone: string,
     purpose: OtpPurpose,
     code: string,
   ): Promise<void> {
+    
     const otp = this.otps.find(
       (item) =>
         item.phone === phone &&
