@@ -1,8 +1,4 @@
-import {
-  Injectable,
-  InternalServerErrorException,
-  Logger,
-} from '@nestjs/common';
+import {Injectable,InternalServerErrorException,Logger,} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
 export interface OsrmCoordinate {
@@ -52,11 +48,14 @@ export class OsrmClient {
       geometries?: 'geojson' | 'polyline' | 'polyline6';
       steps?: boolean;
     },
+
+
   ): Promise<OsrmRoute> {
     const coordinates = [
       `${from.longitude},${from.latitude}`,
       `${to.longitude},${to.latitude}`,
     ].join(';');
+
 
     const params = new URLSearchParams({
       overview: options?.overview ?? 'full',
@@ -67,13 +66,10 @@ export class OsrmClient {
       ),
     });
 
-    const url =
-      `${this.baseUrl}/route/v1/driving/` +
-      `${coordinates}?${params.toString()}`;
 
-    this.logger.debug(
-      `OSRM ROUTE REQUEST | ${url}`,
-    );
+    const url = `${this.baseUrl}/route/v1/driving/` + `${coordinates}?${params.toString()}`;
+
+    this.logger.debug( `OSRM ROUTE REQUEST | ${url}`,    );
 
     const response = await fetch(url);
 
@@ -83,8 +79,7 @@ export class OsrmClient {
       );
     }
 
-    const data =
-      (await response.json()) as OsrmRouteResponse;
+    const data = (await response.json()) as OsrmRouteResponse;
 
     if (
       data.code !== 'Ok' ||

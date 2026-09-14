@@ -172,6 +172,7 @@ export class AuthService {
     this.logger.log(  `Login OTP sent to ${user.phone}`,);
   }
 
+
   async verifyLogin(dto: VerifyLoginDto) {
     const user = await this.em.findOne(User, {
       phone: dto.phone,
@@ -299,8 +300,7 @@ export class AuthService {
       );
     }
 
-    const newRefreshToken =
-      await this.jwtService.signAsync(
+    const newRefreshToken = await this.jwtService.signAsync(
         {
           sub: user.id,
           sid: session.id,
